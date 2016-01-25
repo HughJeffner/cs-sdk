@@ -44,6 +44,12 @@ public class ShiftPlanning
         this._key=Key;
     }
 
+    public ShiftPlanning(string Key, string Token)
+    {
+        this._key = Key;
+        this._token = Token;
+    }
+
     #endregion
 
     #region AppKey
@@ -363,6 +369,7 @@ public class ShiftPlanning
 
         this._init = 0;
         if (requestFields["module"].ToString() == "staff.login") this._init = 1;
+        if (requestFields["module"].ToString() == "terminal.login") this._init = 1;
         
         return this.api();
     }
@@ -1165,8 +1172,94 @@ public class ShiftPlanning
         this.setRequest(requestFields);
         return response;
     }
+    
+    #endregion
 
+    #region Time Clock Methods
 
+    public APIResponse loginTimeClock(String userName, String password, String terminalKey, String computerId)
+    {
+
+        // Initial request
+        RequestFields requestFields = new RequestFields();
+        requestFields.Add("module", "terminal.login");
+        requestFields.Add("method", "GET");
+        requestFields.Add("terminal_key", terminalKey);
+        requestFields.Add("computer_id", computerId);
+        requestFields.Add("username", userName);
+        requestFields.Add("password", password);
+        this.setRequest(requestFields);
+
+        // Chain next request if success else return response
+        if (response.Status.Code == "1")
+        {
+            return getTimeClock();
+        }
+        else
+        {
+            return response;
+        }
+
+    }
+
+    public APIResponse getTimeClock()
+    {
+
+        RequestFields requestFields = new RequestFields();
+        requestFields.Add("module", "timeclock.status");
+        requestFields.Add("method", "GET");
+        requestFields.Add("details", 1);
+
+        this.setRequest(requestFields);
+        return response;
+
+    }
+
+    public APIResponse clockIn(String terminalKey, String computerId, String fileData)
+    {
+
+        RequestFields requestFields = new RequestFields();
+        requestFields.Add("module", "terminal.clockin");
+        requestFields.Add("method", "GET");
+        requestFields.Add("terminal_key", terminalKey);
+        requestFields.Add("computer_id", computerId);
+        requestFields.Add("photo", fileData);
+        requestFields.Add("logout", 1);
+
+        this.setRequest(requestFields);
+        return response;
+
+    }
+
+    public APIResponse clockOut(String terminalKey, String computerId, String fileData)
+    {
+
+        RequestFields requestFields = new RequestFields();
+        requestFields.Add("module", "terminal.clockout");
+        requestFields.Add("method", "GET");
+        requestFields.Add("terminal_key", terminalKey);
+        requestFields.Add("computer_id", computerId);
+        requestFields.Add("photo", fileData);
+        requestFields.Add("logout", 1);
+
+        this.setRequest(requestFields);
+        return response;
+
+    }
+
+    public APIResponse savePhoto(String fileData)
+    {
+
+        RequestFields requestFields = new RequestFields();
+        requestFields.Add("module", "timeclock.screenshot");
+        requestFields.Add("method", "CREATE");
+        requestFields.Add("filedata", fileData);
+
+        this.setRequest(requestFields);
+        return response;
+
+    }
+    
     #endregion
 
     #endregion
