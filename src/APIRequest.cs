@@ -48,7 +48,7 @@ class APIRequest
         string json = @"{""key"": """ + _key +
                         @""", ""token"": """ + _token +
                         @""", ""output"": """ + _output +
-                        @""", ""request"": {";
+                        @""", ""request"": [{";
                         
         if (_requestFields.Count > 0)
         {
@@ -61,7 +61,7 @@ class APIRequest
             }
             json = json.Substring(0, json.Length - 1);
         }
-        json += "} }";
+        json += "}]}";
         return json;
     }
 

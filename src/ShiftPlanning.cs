@@ -1182,10 +1182,10 @@ public class ShiftPlanning
 
         // Initial request
         RequestFields requestFields = new RequestFields();
-        requestFields.Add("module", "terminal.login");
+        requestFields.Add("module", "staff.login");
         requestFields.Add("method", "GET");
-        requestFields.Add("terminal_key", terminalKey);
-        requestFields.Add("computer_id", computerId);
+        //requestFields.Add("terminal_key", terminalKey);
+        //requestFields.Add("computer_id", computerId);
         requestFields.Add("username", userName);
         requestFields.Add("password", password);
         this.setRequest(requestFields);
@@ -1219,13 +1219,13 @@ public class ShiftPlanning
     {
 
         RequestFields requestFields = new RequestFields();
-        requestFields.Add("module", "terminal.clockin");
+        requestFields.Add("module", "timeclock.clockin");
         requestFields.Add("method", "GET");
-        requestFields.Add("terminal_key", terminalKey);
-        requestFields.Add("computer_id", computerId);
+        requestFields.Add("location", computerId);
+        //requestFields.Add("terminal_key", terminalKey);
+        //requestFields.Add("computer_id", computerId);
         requestFields.Add("photo", fileData);
-        requestFields.Add("logout", 1);
-
+        //requestFields.Add("logout", 1);
         this.setRequest(requestFields);
         return response;
 
@@ -1235,31 +1235,18 @@ public class ShiftPlanning
     {
 
         RequestFields requestFields = new RequestFields();
-        requestFields.Add("module", "terminal.clockout");
+        requestFields.Add("module", "timeclock.clockout");
         requestFields.Add("method", "GET");
-        requestFields.Add("terminal_key", terminalKey);
-        requestFields.Add("computer_id", computerId);
+        requestFields.Add("location", computerId);
+        //requestFields.Add("terminal_key", terminalKey);
+        //requestFields.Add("computer_id", computerId);
         requestFields.Add("photo", fileData);
-        requestFields.Add("logout", 1);
-
+        //requestFields.Add("logout", 1);
         this.setRequest(requestFields);
         return response;
 
     }
 
-    public APIResponse savePhoto(String fileData)
-    {
-
-        RequestFields requestFields = new RequestFields();
-        requestFields.Add("module", "timeclock.screenshot");
-        requestFields.Add("method", "CREATE");
-        requestFields.Add("filedata", fileData);
-
-        this.setRequest(requestFields);
-        return response;
-
-    }
-    
     #endregion
 
     #endregion
