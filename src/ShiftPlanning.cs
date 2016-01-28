@@ -1193,7 +1193,11 @@ public class ShiftPlanning
         // Chain next request if success else return response
         if (response.Status.Code == "1")
         {
-            return getTimeClock();
+            //Extract user id
+            String id = response.Data["employee"].Item["id"].Value;
+            APIResponse r = getTimeClock();
+            r.Data.Add("x-id", new DataItem() { Value = id });
+            return r;
         }
         else
         {
@@ -1215,7 +1219,7 @@ public class ShiftPlanning
 
     }
 
-    public APIResponse clockIn(String terminalKey, String computerId, String fileData)
+    public APIResponse clockIn(String terminalKey, String computerId, String photo)
     {
 
         RequestFields requestFields = new RequestFields();
@@ -1224,14 +1228,14 @@ public class ShiftPlanning
         requestFields.Add("location", computerId);
         //requestFields.Add("terminal_key", terminalKey);
         //requestFields.Add("computer_id", computerId);
-        requestFields.Add("photo", fileData);
+        requestFields.Add("photo", new RequestFields.JSONString(photo));
         //requestFields.Add("logout", 1);
         this.setRequest(requestFields);
         return response;
 
     }
 
-    public APIResponse clockOut(String terminalKey, String computerId, String fileData)
+    public APIResponse clockOut(String terminalKey, String computerId, String photo)
     {
 
         RequestFields requestFields = new RequestFields();
@@ -1240,7 +1244,7 @@ public class ShiftPlanning
         requestFields.Add("location", computerId);
         //requestFields.Add("terminal_key", terminalKey);
         //requestFields.Add("computer_id", computerId);
-        requestFields.Add("photo", fileData);
+        requestFields.Add("photo", RequestFields.JSONString(photo));
         //requestFields.Add("logout", 1);
         this.setRequest(requestFields);
         return response;
