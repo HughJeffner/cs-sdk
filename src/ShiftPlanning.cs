@@ -1244,7 +1244,7 @@ public class ShiftPlanning
         requestFields.Add("location", computerId);
         //requestFields.Add("terminal_key", terminalKey);
         //requestFields.Add("computer_id", computerId);
-        requestFields.Add("photo", RequestFields.JSONString(photo));
+        requestFields.Add("photo", new RequestFields.JSONString(photo));
         //requestFields.Add("logout", 1);
         this.setRequest(requestFields);
         return response;
