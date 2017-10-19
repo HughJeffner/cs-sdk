@@ -9,18 +9,22 @@ class APIRequest
     string _key;
     string _token;
     string _output;
-    RequestFields _requestFields;
+    List<RequestFields> _requestFields;
     #endregion
+
+    public APIRequest()
+    {
+        _requestFields = new List<RequestFields>();
+    }
 
     #region Property
 
-    public RequestFields RequestFields
+    public List<RequestFields> RequestFields
     {
         get { return _requestFields; }
         set { _requestFields = value; }
     }
-
-
+    
     public string Key
     {
         get { return _key; }
@@ -45,24 +49,31 @@ class APIRequest
 
     public string GetEncoded()
     {
-        string json = @"{""key"": """ + _key +
+        StringBuilder builder = new StringBuilder();
+        builder.Append(@"{""key"": """ + _key +
                         @""", ""token"": """ + _token +
                         @""", ""output"": """ + _output +
-                        @""", ""request"": [{";
-                        
-        if (_requestFields.Count > 0)
+                        @""", ""request"": [");
+
+        foreach (RequestFields requestFields in _requestFields)
         {
-            foreach (KeyValuePair<string, object> item in _requestFields)
+            if (_requestFields.Count > 0)
             {
-                if (item.Value.GetType().ToString() == "System.String")
-                    json += @"""" + item.Key + @""": """ + item.Value + @""",";
-                else
-                    json += @"""" + item.Key + @""": " + item.Value + ",";
+                builder.Append("{");
+                foreach (KeyValuePair<string, object> item in requestFields)
+                {
+                    if (item.Value.GetType().ToString() == "System.String")
+                        builder.Append(@"""" + item.Key + @""": """ + item.Value + @""",");
+                    else
+                        builder.Append(@"""" + item.Key + @""": " + item.Value + ",");
+                }
+                builder.Remove(builder.Length - 1, 1);
+                builder.Append("},");
             }
-            json = json.Substring(0, json.Length - 1);
         }
-        json += "}]}";
-        return json;
+        builder.Remove(builder.Length - 1, 1);
+        builder.Append("]}");
+        return builder.ToString();
     }
 
     #endregion

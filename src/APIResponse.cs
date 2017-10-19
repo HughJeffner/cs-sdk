@@ -49,19 +49,19 @@ public class APIResponse
 {
 
     #region Fields
-    private ResponseStatus _ResponseStatus;
-    private DataFields _ResponseData;
+    private List<ResponseStatus> _ResponseStatus;
+    private List<DataFields> _ResponseData;
     #endregion
 
     #region Property
 
-    public ResponseStatus Status
+    public List<ResponseStatus> Status
     {
         get { return _ResponseStatus; }
         set { _ResponseStatus = value; }
     }
 
-    public DataFields Data
+    public List<DataFields> Data
     {
         get { return _ResponseData; }
         set { _ResponseData = value; }
@@ -74,37 +74,43 @@ public class APIResponse
 
     public void DecodeResponse(StreamReader xmlResponse)
     {
-        _ResponseStatus = new ResponseStatus();
-        _ResponseData = new DataFields();
+        _ResponseStatus = new List<ResponseStatus>();
+        _ResponseData = new List<DataFields>();
 
         string xmlData = xmlResponse.ReadToEnd();
         XmlDocument xmlDocument = new XmlDocument();
         xmlDocument.LoadXml(xmlData);
-        
-        XmlNodeList nodeList = xmlDocument.SelectNodes("/response");
-
-        foreach (XmlNode xmlNode in nodeList[0].ChildNodes)
+        // Check for batch response else just a single response
+        XmlNodeList nodeList = xmlDocument.SelectNodes("/response/item");
+        if (nodeList.Count == 0) nodeList = xmlDocument.SelectNodes("/response");
+        foreach (XmlNode rootNode in nodeList)
         {
-            switch (xmlNode.Name)
+            var status = new ResponseStatus();
+            var data = new DataFields();
+            foreach (XmlNode xmlNode in rootNode.ChildNodes)
             {
-                case "status":
-                    _ResponseStatus.Code = xmlNode.InnerText;
-                    _ResponseStatus.Text = getResponseText(xmlNode.InnerText);
-                    break;
-                case "token":
-                    _ResponseStatus.Token = xmlNode.InnerText;
-                    break;
-                case "error":
-                    _ResponseStatus.Error = xmlNode.InnerText;
-                    break;
-                case "data":
-                    _ResponseData = NodeToDataFields(xmlNode.ChildNodes);
-                    break;
-                default: 
-                    break;
+                switch (xmlNode.Name)
+                {
+                    case "status":
+                        status.Code = xmlNode.InnerText;
+                        status.Text = getResponseText(xmlNode.InnerText);
+                        break;
+                    case "token":
+                        status.Token = xmlNode.InnerText;
+                        break;
+                    case "error":
+                        status.Error = xmlNode.InnerText;
+                        break;
+                    case "data":
+                        data = NodeToDataFields(xmlNode.ChildNodes);
+                        break;
+                    default:
+                        break;
+                }
             }
+            _ResponseStatus.Add(status);
+            _ResponseData.Add(data);
         }
-
     }
 
     private DataFields NodeToDataFields(XmlNodeList xmlNodes)

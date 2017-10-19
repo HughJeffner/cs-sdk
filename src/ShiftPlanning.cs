@@ -336,8 +336,8 @@ public class ShiftPlanning
 
     private void setSession()
     {// store the user data to this session
-        this._token = response.Status.Token;
-        this.session = response.Data;
+        this._token = response.Status[0].Token;
+        this.session = response.Data[0];
     }
 
     private void destroySession()
@@ -346,7 +346,7 @@ public class ShiftPlanning
         requestFields.Add("module", "staff.logout");
         requestFields.Add("method", "GET");
         this.setRequest(requestFields);
-        if (response.Status.Code == "1")
+        if (response.Status[0].Code == "1")
         {// logout successful, remove local session data
             this._token = null;
         }
@@ -357,6 +357,13 @@ public class ShiftPlanning
     #region Request & Response
 
     private string setRequest(RequestFields requestFields)
+    {
+        List<RequestFields> requests = new List<RequestFields>();
+        requests.Add(requestFields);
+        return this.setRequest(requests);
+    }
+
+    private string setRequest(List<RequestFields> requestFields)
     {// set the request parameters
         // clear out previous request data
         this.request = new APIRequest();
@@ -368,12 +375,12 @@ public class ShiftPlanning
         this.request.RequestFields = requestFields;
 
         this._init = 0;
-        if (requestFields["module"].ToString() == "staff.login") this._init = 1;
-        if (requestFields["module"].ToString() == "terminal.login") this._init = 1;
-        
-        return this.api();
-    }
+        if (requestFields[0]["module"].ToString() == "staff.login") this._init = 1;
+        if (requestFields[0]["module"].ToString() == "terminal.login") this._init = 1;
 
+        return this.api();
+
+    }
 
     private string api()
     {// create the api call
@@ -418,11 +425,12 @@ public class ShiftPlanning
         webrequest.Timeout = 120000;
 
         //check whether it is file upload
+        //TODO: Support batch requests
         string uploadfile = "";
-        if (request.RequestFields.ContainsKey("filepath"))
+        if (request.RequestFields[0].ContainsKey("filepath"))
         {//get the file name to upload
-            uploadfile = request.RequestFields["filepath"].ToString();
-            request.RequestFields.Remove("filepath");
+            uploadfile = request.RequestFields[0]["filepath"].ToString();
+            request.RequestFields[0].Remove("filepath");
         }
 
         //get JSON format string for 'data' parameter
@@ -515,7 +523,7 @@ public class ShiftPlanning
                 {//if it is first call, get the 'token'
                     this.setSession();
                 }
-                return response.Status.Code;
+                return response.Status[0].Code;
 
                 //TO DO: need to implement debug (to log.txt)
             }
@@ -1177,44 +1185,29 @@ public class ShiftPlanning
 
     #region Time Clock Methods
 
-    public APIResponse loginTimeClock(String userName, String password, String terminalKey, String computerId)
+    public APIResponse getTimeClock(string employeeId)
     {
 
-        // Initial request
-        RequestFields requestFields = new RequestFields();
-        requestFields.Add("module", "staff.login");
-        requestFields.Add("method", "GET");
-        //requestFields.Add("terminal_key", terminalKey);
-        //requestFields.Add("computer_id", computerId);
-        requestFields.Add("username", userName);
-        requestFields.Add("password", password);
-        this.setRequest(requestFields);
+        var requests = new List<RequestFields>();
 
-        // Chain next request if success else return response
-        if (response.Status.Code == "1")
-        {
-            //Extract user id
-            String id = response.Data["employee"].Item["id"].Value;
-            APIResponse r = getTimeClock();
-            r.Data.Add("x-id", new DataItem() { Value = id });
-            return r;
-        }
-        else
-        {
-            return response;
-        }
-
-    }
-
-    public APIResponse getTimeClock()
-    {
-
-        RequestFields requestFields = new RequestFields();
+        var requestFields = new RequestFields();
         requestFields.Add("module", "timeclock.status");
         requestFields.Add("method", "GET");
+        requestFields.Add("employee", employeeId);
         requestFields.Add("details", 1);
+        requests.Add(requestFields);
 
-        this.setRequest(requestFields);
+        requestFields = new RequestFields();
+        requestFields.Add("module", "timeclock.timeclocks");
+        requestFields.Add("method", "GET");
+        requestFields.Add("employee", employeeId);
+        requestFields.Add("page", 0);
+        requestFields.Add("per_page", 10);
+        requestFields.Add("order_by", "end_timestamp");
+        requestFields.Add("direction", "desc");
+        requests.Add(requestFields);
+
+        this.setRequest(requests);
         return response;
 
     }
