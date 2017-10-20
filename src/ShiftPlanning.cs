@@ -1194,7 +1194,6 @@ public class ShiftPlanning
         requestFields.Add("module", "timeclock.status");
         requestFields.Add("method", "GET");
         requestFields.Add("employee", employeeId);
-        requestFields.Add("details", 1);
         requests.Add(requestFields);
 
         requestFields = new RequestFields();
@@ -1203,7 +1202,7 @@ public class ShiftPlanning
         requestFields.Add("employee", employeeId);
         requestFields.Add("page", 0);
         requestFields.Add("per_page", 10);
-        requestFields.Add("order_by", "end_timestamp");
+        requestFields.Add("order_by", "id");
         requestFields.Add("direction", "desc");
         requests.Add(requestFields);
 
