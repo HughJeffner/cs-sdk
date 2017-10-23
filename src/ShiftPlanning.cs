@@ -1211,32 +1211,36 @@ public class ShiftPlanning
 
     }
 
-    public APIResponse clockIn(String terminalKey, String computerId, String photo)
+    public APIResponse clockIn(string employeeId, string terminalKey, string computerId, string ip, string notes)
     {
 
         RequestFields requestFields = new RequestFields();
-        requestFields.Add("module", "timeclock.clockin");
+        requestFields.Add("module", "terminal.clockin");
         requestFields.Add("method", "GET");
-        requestFields.Add("location", computerId);
-        //requestFields.Add("terminal_key", terminalKey);
-        //requestFields.Add("computer_id", computerId);
-        requestFields.Add("photo", new RequestFields.JSONString(photo));
+        requestFields.Add("id", employeeId);
+        requestFields.Add("terminal_key", terminalKey);
+        if (!String.IsNullOrEmpty(computerId)) requestFields.Add("computer_id", computerId);
+        if (!String.IsNullOrEmpty(ip)) requestFields.Add("ip", ip);
+        if (!String.IsNullOrEmpty(notes)) requestFields.Add("notes", notes);
+        //requestFields.Add("photo", new RequestFields.JSONString(photo));
         //requestFields.Add("logout", 1);
         this.setRequest(requestFields);
         return response;
 
     }
 
-    public APIResponse clockOut(String terminalKey, String computerId, String photo)
+    public APIResponse clockOut(string employeeId, string terminalKey, string computerId, string ip, string notes)
     {
 
         RequestFields requestFields = new RequestFields();
-        requestFields.Add("module", "timeclock.clockout");
+        requestFields.Add("module", "terminal.clockout");
         requestFields.Add("method", "GET");
-        requestFields.Add("location", computerId);
-        //requestFields.Add("terminal_key", terminalKey);
-        //requestFields.Add("computer_id", computerId);
-        requestFields.Add("photo", new RequestFields.JSONString(photo));
+        requestFields.Add("id", employeeId);
+        requestFields.Add("terminal_key", terminalKey);
+        if (!String.IsNullOrEmpty(computerId)) requestFields.Add("computer_id", computerId);
+        if (!String.IsNullOrEmpty(ip)) requestFields.Add("ip", ip);
+        if (!String.IsNullOrEmpty(notes)) requestFields.Add("notes", notes);
+        //requestFields.Add("photo", new RequestFields.JSONString(photo));
         //requestFields.Add("logout", 1);
         this.setRequest(requestFields);
         return response;
