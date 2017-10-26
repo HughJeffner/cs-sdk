@@ -1247,6 +1247,28 @@ public class ShiftPlanning
 
     }
 
+    public APIResponse breakIn(string timeclock)
+    {
+        RequestFields requestFields = new RequestFields();
+        requestFields.Add("module", "timeclock.event");
+        requestFields.Add("method", "CREATE");
+        requestFields.Add("timeclock", timeclock);
+        requestFields.Add("type", "breakin");
+        this.setRequest(requestFields);
+        return response;
+    }
+
+    public APIResponse breakOut(string timeclock)
+    {
+        RequestFields requestFields = new RequestFields();
+        requestFields.Add("module", "timeclock.event");
+        requestFields.Add("method", "CREATE");
+        requestFields.Add("timeclock", timeclock);
+        requestFields.Add("type", "breakout");
+        this.setRequest(requestFields);
+        return response;
+    }
+
     #endregion
 
     #endregion
